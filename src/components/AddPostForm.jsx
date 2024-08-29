@@ -10,7 +10,7 @@ import {
     InputLabel,
     TextField,
 } from "@mui/material";
-import {useAddPostMutation} from "../store/slices/apiSlice.js";
+import {useAddPostMutation} from "../store/api/postsApi/index.js";
 
 const validationSchema = Yup.object({
     title: Yup.string()

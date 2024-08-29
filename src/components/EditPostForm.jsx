@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useAddPostMutation, useGetPostsQuery} from "../store/slices/apiSlice.js";
+import {useAddPostMutation, useGetPostsQuery} from "../store/api/postsApi/index.js";
 import * as Yup from "yup";
 import {useFormik} from "formik";
 import {

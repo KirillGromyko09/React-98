@@ -1,4 +1,4 @@
-import {useGetPostsQuery} from "../store/slices/apiSlice.js";
+import {useGetPostsQuery} from "../store/api/postsApi/index.js";
 import {Button, Stack} from "@mui/material";
 import {Link} from "react-router-dom";
 
