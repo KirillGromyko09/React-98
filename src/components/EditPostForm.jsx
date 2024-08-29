@@ -9,10 +9,11 @@ import {
     CardContent,
     Container,
     FormHelperText,
-    Grid2,
+    Grid,
     TextField,
     Typography
 } from "@mui/material";
+import {useNavigate} from "react-router-dom";
 
 
 const validationSchema = Yup.object({
@@ -29,25 +30,24 @@ const validationSchema = Yup.object({
 const EditPostForm = ({postId}) => {
     const {data: posts} = useGetPostsQuery();
     const post = posts?.find(post => post.id === postId);
-    const [updatePost , {isLoading , isSuccess , isError}] = useAddPostMutation;
+    const [updatePost , {isLoading , isSuccess , isError}] = useAddPostMutation();
+    const navigate = useNavigate();
 
     const formik = useFormik({
         initialValues: {
             title: post?.title || '' ,
             description: post?.description || ''
-        }
+        },
         validationSchema,
         onSubmit: (values) => {
-            updatePost({id:postId , updatedPost: values})
+            updatePost({id:postId , ...values})
         }
     })
     useEffect(() => {
-        if (post){
-            formik.setValues({title: post.title , description: post.description})
+        if (!post) {
+            navigate('/');
         }
-
-    }, [post , formik]);
-
+    }, [post, navigate]);
     return (
 
         <Container>
@@ -55,12 +55,12 @@ const EditPostForm = ({postId}) => {
                 <form onSubmit={formik.handleSubmit}>
                     <CardContent>
                         <Typography variant="h5">Edit post</Typography>
-                        <Grid2 container spacing={2}>
-                            <Grid2 item xs={12} sm={6}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6}>
                                 <TextField
                                     fullWidth
-                                    id="name"
-                                    label="Name"
+                                    id="title"
+                                    label="Title"
                                     variant="outlined"
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
@@ -69,12 +69,12 @@ const EditPostForm = ({postId}) => {
                                 {formik.touched.title && formik.errors.title && (
                                     <FormHelperText>{formik.errors.title}</FormHelperText>
                                 )}
-                            </Grid2>
-                            <Grid2 item xs={12} sm={6}>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
                                 <TextField
                                     fullWidth
-                                    id="phoneNumber"
-                                    label="Phone Number"
+                                    id="description"
+                                    label="Description"
                                     variant="outlined"
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
@@ -83,14 +83,14 @@ const EditPostForm = ({postId}) => {
                                 {formik.touched.description && formik.errors.description && (
                                     <FormHelperText>{formik.errors.description}</FormHelperText>
                                 )}
-                            </Grid2>
-                        </Grid2>
+                            </Grid>
+                        </Grid>
                     </CardContent>
                     <CardActions>
-                        <Button type="submit" variant="contained" color="primary">
+                        <Button type="submit" variant="contained" color="primary" disabled={isLoading}>
                             Save
                         </Button>
-                        <Button color="error" variant="contained">
+                        <Button color="error" variant="contained" onClick={() => navigate('/')}>
                             Cancel
                         </Button>
                     </CardActions>

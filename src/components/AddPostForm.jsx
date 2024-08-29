@@ -24,9 +24,7 @@ const validationSchema = Yup.object({
 });
 
 const AddPostFrom = () => {
-    const [title ,setTitle] = useState('');
-    const [description ,setDescription] = useState('');
-    const [addPost , {isLoading , isSuccess , isError}] = useAddPostMutation;
+    const [addPost , {isLoading , isSuccess , isError}] = useAddPostMutation();
 
 
     const formik = useFormik({
@@ -35,20 +33,16 @@ const AddPostFrom = () => {
             description: "",
         },
         validationSchema,
-        onSubmit: (e) => {
-           e.preventDefault()
-            addPost({title, description})
-            setTitle('')
-            setDescription('')
+        onSubmit: (values) => {
+            addPost(values);
+            formik.resetForm();
         },
     });
     return (
         <Container>
             <form onSubmit={formik.handleSubmit}>
                 <FormControl>
-                    <InputLabel margin="normal" htmlFor="name">
-                        Name
-                    </InputLabel>
+                    <InputLabel margin='dense' htmlFor="title">Title</InputLabel>
                     <Input
                         id="title"
                         type="text"
@@ -59,6 +53,7 @@ const AddPostFrom = () => {
                     {formik.touched.title && formik.errors.title && (
                         <FormHelperText>{formik.errors.title}</FormHelperText>
                     )}
+                    <FormControl>
                     <TextField
                         label="Description"
                         margin="normal"
@@ -72,12 +67,14 @@ const AddPostFrom = () => {
                     {formik.touched.description && formik.errors.description && (
                         <FormHelperText>{formik.errors.description}</FormHelperText>
                     )}
+                    </FormControl>
                 </FormControl>
                 <Button
                     type="submit"
                     variant="contained"
                     color="primary"
-                    style={({ marginTop: "10px" }, { display: "block" })}
+                    style={{ marginTop: "10px" }}
+                    disabled={isLoading}
                 >
                     Submit
                 </Button>
