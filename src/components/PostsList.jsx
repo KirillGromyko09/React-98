@@ -11,7 +11,7 @@ const PostsList = () =>{
         <Stack>
             <Button variant="contained" onClick={refetch}>Refresh</Button>
             <ul>
-                {posts && posts.length > 0 ? ( // Додана перевірка на наявність даних
+                {posts && posts.length > 0 ? (
                     posts.map(post => (
                         <li key={post.id}>
                             <Link to={`/edit/${post.id}`}>{post.title}</Link>

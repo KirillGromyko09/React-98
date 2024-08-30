@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {useAddPostMutation, useGetPostsQuery} from "../store/api/postsApi/index.js";
+import React, {useEffect} from 'react';
+import { useGetPostsQuery, useUpdatePostMutation} from "../store/api/postsApi/index.js";
 import * as Yup from "yup";
 import {useFormik} from "formik";
 import {
@@ -28,26 +28,38 @@ const validationSchema = Yup.object({
 });
 
 const EditPostForm = ({postId}) => {
-    const {data: posts} = useGetPostsQuery();
+    const {data: posts, isLoading, isError, isFetching} = useGetPostsQuery();
     const post = posts?.find(post => post.id === postId);
-    const [updatePost , {isLoading , isSuccess , isError}] = useAddPostMutation();
+    const [updatePost, {isLoading: isUpdating}] = useUpdatePostMutation();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!isLoading && !isFetching && !post && !isError) {
+            navigate('/');
+        }
+    }, [isLoading, isFetching, post, isError, navigate]);
+
 
     const formik = useFormik({
         initialValues: {
             title: post?.title || '' ,
             description: post?.description || ''
         },
+        enableReinitialize: true,
         validationSchema,
-        onSubmit: (values) => {
-            updatePost({id:postId , ...values})
-        }
-    })
-    useEffect(() => {
-        if (!post) {
+        onSubmit: async (values) => {
+            await updatePost({id: postId, ...values});
             navigate('/');
         }
-    }, [post, navigate]);
+    })
+
+
+    if (isLoading || isFetching) {
+        return <div>Loading...</div>;
+    }
+    if (isError) {
+        return <div>Error loading post data.</div>;
+    }
     return (
 
         <Container>
@@ -90,7 +102,7 @@ const EditPostForm = ({postId}) => {
                         <Button type="submit" variant="contained" color="primary" disabled={isLoading}>
                             Save
                         </Button>
-                        <Button color="error" variant="contained" onClick={() => navigate('/')}>
+                        <Button color="error" variant="contained"  onClick={() => navigate('/')}>
                             Cancel
                         </Button>
                     </CardActions>
